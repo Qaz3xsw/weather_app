@@ -5,12 +5,12 @@
 enum CodeType { http, json }
 
 class ResponseCodeException implements Exception {
-  ResponseCodeException(
+  const ResponseCodeException(
     this.message, {
     required this.code,
     required this.url,
     required this.codeType,
-    // other useful data to figure out an error
+    // other useful data to figure out why error occurs
   });
 
   final String message;
@@ -20,6 +20,6 @@ class ResponseCodeException implements Exception {
 }
 
 class CityNotExistsException implements Exception {
-  CityNotExistsException({required this.cityName});
+  const CityNotExistsException({required this.cityName});
   final String cityName;
 }

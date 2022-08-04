@@ -1,7 +1,10 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/bloc/weather_bloc.dart';
-import 'package:weather_app/ui/screen/weather_details.dart';
+
+import '../../bloc/weather_bloc.dart';
+import 'weather_details.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController textController;
+  final errorMessage = 'Введите название города';
   String? errorText;
 
   @override
@@ -23,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
+    textController.dispose();
   }
 
   @override
@@ -30,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
@@ -41,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   errorText: errorText,
                 ),
                 onChanged: (val) {
-                  val.isEmpty ? errorText = 'error' : errorText = null;
+                  val.isEmpty ? errorText = errorMessage : errorText = null;
                   setState(() {});
                 },
               ),
@@ -51,12 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 if (textController.text.isNotEmpty) {
                   BlocProvider.of<WeatherBloc>(context).add(WeatherEvent.weatherRequested(cityName: textController.text));
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const WeatherDetailsScreen(),
-                  ));
+                  Navigator.of(context).push(
+                    MaterialPageRoute<Widget>(
+                      builder: (context) => const WeatherDetailsScreen(),
+                    ),
+                  );
                 } else {
                   setState(() {
-                    errorText = 'error';
+                    errorText = errorMessage;
                   });
                 }
               },

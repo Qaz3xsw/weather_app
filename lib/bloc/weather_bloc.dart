@@ -1,10 +1,13 @@
-import 'dart:io';
+// ignore_for_file: avoid_types_on_closure_parameters, lines_longer_than_80_chars
 
 import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/bloc/errors.dart';
-import 'package:weather_app/model/weather.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../model/weather.dart';
+import 'errors.dart';
 
 part 'weather_bloc.freezed.dart';
 
@@ -47,7 +50,6 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     emit(const WeatherState.inProgress());
 
     try {
-
       final Weather weather = await weatherRepository.requestWeatherByCity(event.cityName);
       emit(WeatherState.loaded(weather));
 
@@ -68,13 +70,18 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
       if (e.codeType == CodeType.http && e.code == 500) {
         emit(const WeatherState.error('Ошибка сервера'));
         log(e.message, error: e);
+        return;
       }
 
-      if (e.codeType == CodeType.json && e.code == 401) {
+      if (e.code == 401) {
         emit(const WeatherState.error('Доступ запрещен'));
         log(e.message, error: e);
+        return;
       }
+
       // other codes handling..
+      emit(const WeatherState.error('Что-то пошло не так..'));
+      log('unknown response error', error: e);
 
       /// Unexpected
     } on Exception catch (e, trace) {
